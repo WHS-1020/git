@@ -1,0 +1,12 @@
+# Build output
+bin/
+obj/
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# IDE / user files
+.vs/
+*.user

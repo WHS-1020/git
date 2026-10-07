@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLC 管理 - 轧机监控平台</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="page-title" id="page-title">PLC 管理</div>
+        <div class="right"><span id="clock">--</span></div>
+      </div>
+      <div class="content">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>PLC 列表</h3>
+            <button class="btn primary" onclick="openPlcModal()">＋ 新增 PLC</button>
+          </div>
+          <div class="panel-body">
+            <div class="tbl-wrap"><table class="tbl">
+              <thead><tr>
+                <th>名称</th><th>协议</th><th>IP 地址</th><th>端口</th><th>机架</th><th>槽号</th>
+                <th>连接状态</th><th>启用</th><th>最后连接</th><th>最后错误</th><th style="min-width:240px">操作</th>
+              </tr></thead>
+              <tbody id="plc-tbody"><tr><td colspan="11" class="empty">加载中…</td></tr></tbody>
+            </table></div>
+            <p class="small muted mt-12">协议说明：S7 = 西门子 S7（需配置真实 IP/机架/槽号）；Simulator = 模拟采集器（无真实 PLC 时演示用，数据明确标记为模拟）；ModbusTcp / ModbusRtu 为预留协议，驱动未实现时会明确提示。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增/编辑弹窗 -->
+  <div class="modal-overlay" id="plc-modal">
+    <div class="modal">
+      <div class="modal-head"><h3 id="plc-modal-title">新增 PLC</h3><button class="modal-close">✕</button></div>
+      <div class="modal-body">
+        <form id="plc-form">
+          <div class="form-grid">
+            <div class="field" data-field="name"><label>PLC 名称 *</label><input type="text" id="plc-name" placeholder="例如：主PLC"></div>
+            <div class="field" data-field="protocol"><label>协议 *</label>
+              <select id="plc-protocol">
+                <option value="S7">S7（西门子）</option>
+                <option value="Simulator">Simulator（模拟采集器）</option>
+                <option value="ModbusTcp">Modbus TCP（预留）</option>
+                <option value="ModbusRtu">Modbus RTU（预留）</option>
+              </select>
+            </div>
+            <div class="field" data-field="ipAddress"><label>IP 地址 *</label><input type="text" id="plc-ip" placeholder="例如：192.168.1.10"></div>
+            <div class="field" data-field="port"><label>端口</label><input type="number" id="plc-port" value="102" min="1" max="65535"></div>
+            <div class="field" data-field="rack"><label>机架（S7）</label><input type="number" id="plc-rack" value="0" min="0"></div>
+            <div class="field" data-field="slot"><label>槽号（S7）</label><input type="number" id="plc-slot" value="1" min="0"></div>
+            <div class="field full"><label>启用</label>
+              <label class="switch"><input type="checkbox" id="plc-enabled" checked><span class="slider"></span></label>
+              <span class="hint">停用后采集服务将跳过该 PLC</span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('plc-modal')">取消</button>
+        <button class="btn primary" id="plc-save-btn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-box"></div>
+  <script src="lib/signalr/signalr.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/plcs.js"></script>
+</body>
+</html>

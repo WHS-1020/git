@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设备管理 - 轧机监控平台</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="page-title" id="page-title">设备管理</div>
+        <div class="right"><span id="clock">--</span></div>
+      </div>
+      <div class="content">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>设备列表</h3>
+            <button class="btn primary" onclick="openDeviceModal()">＋ 新增设备</button>
+          </div>
+          <div class="panel-body">
+            <div class="tbl-wrap"><table class="tbl">
+              <thead><tr>
+                <th>设备名称</th><th>设备编码</th><th>说明</th><th>测点数量</th><th>设备状态</th><th>通信状态</th><th style="min-width:300px">操作</th>
+              </tr></thead>
+              <tbody id="device-tbody"><tr><td colspan="7" class="empty">加载中…</td></tr></tbody>
+            </table></div>
+            <p class="small muted mt-12">提示：复制设备配置会复制测点名称/单位/数据类型/报警阈值/排序等，但<b>不会复制 PLC 绑定与 PLC 地址</b>，新设备的 PLC 地址需由用户确认后填写。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增/编辑弹窗 -->
+  <div class="modal-overlay" id="device-modal">
+    <div class="modal">
+      <div class="modal-head"><h3 id="device-modal-title">新增设备</h3><button class="modal-close">✕</button></div>
+      <div class="modal-body">
+        <form id="device-form">
+          <div class="form-grid">
+            <div class="field" data-field="name"><label>设备名称 *</label><input type="text" id="dev-name" placeholder="例如：3#轧机"></div>
+            <div class="field" data-field="code"><label>设备编码</label><input type="text" id="dev-code" placeholder="例如：ROLLING-03"></div>
+            <div class="field full" data-field="description"><label>说明</label><input type="text" id="dev-desc" placeholder="设备用途说明（可选）"></div>
+            <div class="field" data-field="sortOrder"><label>排序</label><input type="number" id="dev-sort" value="0"></div>
+            <div class="field"><label>启用</label>
+              <label class="switch"><input type="checkbox" id="dev-enabled" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('device-modal')">取消</button>
+        <button class="btn primary" id="device-save-btn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-box"></div>
+  <script src="lib/signalr/signalr.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/devices.js"></script>
+</body>
+</html>

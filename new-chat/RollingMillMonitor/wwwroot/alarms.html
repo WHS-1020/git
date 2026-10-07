@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报警管理 - 轧机监控平台</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="page-title" id="page-title">报警管理</div>
+        <div class="right"><span id="clock">--</span></div>
+      </div>
+      <div class="content">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="filters">
+              <select id="f-device"><option value="">全部设备</option></select>
+              <select id="f-type">
+                <option value="">全部类型</option>
+                <option value="HighHigh">高高报警</option>
+                <option value="High">高报警</option>
+                <option value="Low">低报警</option>
+                <option value="LowLow">低低报警</option>
+                <option value="Fault">故障报警</option>
+                <option value="Comm">通信报警</option>
+              </select>
+              <select id="f-active"><option value="">全部状态</option><option value="true">仅活动报警</option><option value="false">仅已恢复</option></select>
+              <select id="f-ack"><option value="">确认状态</option><option value="true">已确认</option><option value="false">未确认</option></select>
+              <input type="datetime-local" id="f-from">
+              <input type="datetime-local" id="f-to">
+              <button class="btn sm" onclick="loadAlarms()">查询</button>
+              <button class="btn sm" onclick="resetFilters()">重置</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="tbl-wrap"><table class="tbl">
+              <thead><tr>
+                <th>级别</th><th>设备</th><th>测点</th><th>报警内容</th><th>报警值</th><th>阈值</th>
+                <th>发生时间</th><th>持续时间</th><th>确认</th><th>恢复</th><th style="min-width:150px">操作</th>
+              </tr></thead>
+              <tbody id="alarm-tbody"><tr><td colspan="11" class="empty">加载中…</td></tr></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-box"></div>
+  <script src="lib/signalr/signalr.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/alarms.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>总览 - 轧机监控平台</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="page-title" id="page-title">总览</div>
+        <div class="right">
+          <span id="clock">--</span>
+          <span class="sim-badge" id="sim-badge">模拟数据 · 未接真实 PLC</span>
+        </div>
+      </div>
+      <div class="content">
+        <div class="stat-grid" id="stat-grid">
+          <div class="stat-card"><div class="label">设备总数</div><div class="num accent" id="st-devices">—</div></div>
+          <div class="stat-card"><div class="label">测点总数</div><div class="num accent" id="st-points">—</div></div>
+          <div class="stat-card"><div class="label">正常</div><div class="num good" id="st-normal">—</div></div>
+          <div class="stat-card"><div class="label">未配置</div><div class="num gray" id="st-notconfigured">—</div></div>
+          <div class="stat-card"><div class="label">配置错误</div><div class="num amber" id="st-configerror">—</div></div>
+          <div class="stat-card"><div class="label">通信故障</div><div class="num warn" id="st-commfault">—</div></div>
+          <div class="stat-card"><div class="label">读取失败</div><div class="num amber" id="st-readfailed">—</div></div>
+          <div class="stat-card"><div class="label">已禁用</div><div class="num gray" id="st-disabled">—</div></div>
+          <div class="stat-card"><div class="label">当前报警</div><div class="num warn" id="st-alarms">—</div></div>
+        </div>
+
+        <div class="panel" id="plc-panel">
+          <div class="panel-head"><h3>PLC 通信状态</h3></div>
+          <div class="panel-body" id="plc-list"><div class="empty">加载中…</div></div>
+        </div>
+
+        <div class="device-grid" id="device-grid"><div class="empty">加载中…</div></div>
+
+        <div class="panel" id="alarm-panel">
+          <div class="panel-head">
+            <h3>当前报警</h3>
+            <a class="btn sm" href="alarms.html">查看全部报警 →</a>
+          </div>
+          <div class="panel-body" id="alarm-list"><div class="empty">暂无报警</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-box"></div>
+  <script src="lib/signalr/signalr.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/overview.js"></script>
+</body>
+</html>

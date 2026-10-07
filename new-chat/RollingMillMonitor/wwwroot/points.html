@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测点管理 - 轧机监控平台</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="page-title" id="page-title">测点管理</div>
+        <div class="right"><span id="clock">--</span></div>
+      </div>
+      <div class="content">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="filters">
+              <select id="f-device"><option value="">全部设备</option></select>
+              <select id="f-plc"><option value="">全部 PLC</option></select>
+              <input type="text" id="f-keyword" placeholder="搜索名称/编码/地址">
+              <button class="btn sm" onclick="loadPoints()">查询</button>
+            </div>
+            <button class="btn primary" onclick="openPointModal()">＋ 新增测点</button>
+          </div>
+          <div class="panel-body">
+            <div class="tbl-wrap"><table class="tbl">
+              <thead><tr>
+                <th>设备</th><th>测点名称</th><th>PLC</th><th>PLC 地址</th><th>类型</th><th>单位</th>
+                <th>当前值</th><th>状态</th><th>最后更新</th><th style="min-width:280px">操作</th>
+              </tr></thead>
+              <tbody id="point-tbody"><tr><td colspan="10" class="empty">加载中…</td></tr></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增/编辑/报警配置 弹窗 -->
+  <div class="modal-overlay" id="point-modal">
+    <div class="modal">
+      <div class="modal-head"><h3 id="point-modal-title">新增测点</h3><button class="modal-close">✕</button></div>
+      <div class="modal-body">
+        <form id="point-form">
+          <div class="form-grid">
+            <div class="field" data-field="deviceId"><label>所属设备 *</label>
+              <select id="pt-device"></select>
+            </div>
+            <div class="field" data-field="name"><label>测点名称 *</label><input type="text" id="pt-name" placeholder="例如：温度"></div>
+            <div class="field" data-field="plcId"><label>绑定 PLC *</label>
+              <select id="pt-plc"></select>
+            </div>
+            <div class="field" data-field="code"><label>测点编码</label><input type="text" id="pt-code" placeholder="例如：TEMP-01"></div>
+            <div class="field" data-field="address"><label>PLC 地址 *</label><input type="text" id="pt-address" placeholder="例如：DB1.DBD0">
+              <div class="hint" id="pt-address-hint">S7 格式：DB1.DBD0（4字节）/ DB1.DBW0（2字节）/ DB1.DBX0.0（位）/ MW10 / MD20</div>
+            </div>
+            <div class="field" data-field="dataType"><label>数据类型 *</label>
+              <select id="pt-datatype">
+                <option value="Bool">Bool（位）</option>
+                <option value="Int">Int（16位整数）</option>
+                <option value="UInt">UInt（16位无符号）</option>
+                <option value="Word">Word（16位）</option>
+                <option value="DInt">DInt（32位整数）</option>
+                <option value="Real">Real（32位浮点）</option>
+                <option value="Float">Float（32位浮点）</option>
+                <option value="DWord">DWord（32位）</option>
+              </select>
+            </div>
+            <div class="field" data-field="unit"><label>单位</label><input type="text" id="pt-unit" placeholder="例如：°C / A / L/min / MPa"></div>
+            <div class="field" data-field="sortOrder"><label>排序</label><input type="number" id="pt-sort" value="0"></div>
+            <div class="field" data-field="scale"><label>倍率（Scale）</label><input type="number" id="pt-scale" value="1" step="any"></div>
+            <div class="field" data-field="offset"><label>偏移（Offset）</label><input type="number" id="pt-offset" value="0" step="any"></div>
+            <div class="field"><label>测点启用</label>
+              <label class="switch"><input type="checkbox" id="pt-enabled" checked><span class="slider"></span></label>
+            </div>
+            <div class="field"><label>报警启用</label>
+              <label class="switch"><input type="checkbox" id="pt-alarm-enabled"><span class="slider"></span></label>
+            </div>
+            <div class="hint" id="pt-bool-hint" style="display:none">开关量状态测点（油流/油压）：1=正常，0=故障。启用报警后，值为 0 时自动触发"故障报警"，无需填写数值阈值，只需设置报警延时/恢复延时。</div>
+            <div class="field" data-field="highHigh"><label>高高报警阈值（HH）</label><input type="number" id="pt-hh" step="any" placeholder="留空不启用"></div>
+            <div class="field" data-field="high"><label>高报警阈值（H）</label><input type="number" id="pt-high" step="any" placeholder="留空不启用"></div>
+            <div class="field" data-field="low"><label>低报警阈值（L）</label><input type="number" id="pt-low" step="any" placeholder="例如油流 8、油压 0.5"></div>
+            <div class="field" data-field="lowLow"><label>低低报警阈值（LL）</label><input type="number" id="pt-ll" step="any" placeholder="例如油流 6、油压 0.35"></div>
+            <div class="field" data-field="alarmDelayMs"><label>报警延时（毫秒）</label><input type="number" id="pt-alarm-delay" value="0" min="0"></div>
+            <div class="field" data-field="recoveryDelayMs"><label>恢复延时（毫秒）</label><input type="number" id="pt-recovery-delay" value="0" min="0"></div>
+            <div class="field" data-field="deadband"><label>死区（Deadband）</label><input type="number" id="pt-deadband" value="0" step="any"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('point-modal')">取消</button>
+        <button class="btn primary" id="point-save-btn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-box"></div>
+  <script src="lib/signalr/signalr.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/points.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>配置导入导出 - 轧机监控平台</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="page-title" id="page-title">配置导入导出</div>
+        <div class="right"><span id="clock">--</span></div>
+      </div>
+      <div class="content">
+        <div class="panel">
+          <div class="panel-head"><h3>导出配置</h3></div>
+          <div class="panel-body">
+            <p class="muted small mb-12">导出内容包括：PLC 配置、设备配置、测点配置（含倍率/偏移）与报警阈值。CSV 使用分节格式（Section 列区分 PLC / Device / Point / AlarmThreshold）。</p>
+            <div class="filters">
+              <button class="btn primary" onclick="exportJson()">导出 JSON</button>
+              <button class="btn" onclick="exportCsv()">导出 CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>导入配置</h3></div>
+          <div class="panel-body">
+            <p class="muted small mb-12">支持导入 JSON 或 CSV（格式与导出一致）。导入前会完整校验：<b>设备名称是否重复、PLC 是否存在、地址格式是否正确、数据类型是否支持、测点是否重复</b>；<span class="alert-lv-critical">只要有一处错误，本次导入将整体取消，不保存任何数据</span>，并返回具体行号与原因。</p>
+            <div class="filters">
+              <label class="btn primary" style="cursor:pointer">选择文件导入<input type="file" id="import-file" accept=".json,.csv,text/csv,application/json" style="display:none"></label>
+              <span class="muted small" id="file-name">未选择文件</span>
+            </div>
+            <div class="import-result" id="import-result"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>CSV 格式说明</h3></div>
+          <div class="panel-body">
+            <p class="small muted">CSV 共 26 列，首列为 Section 分节标识，其余列按分节填写对应字段：</p>
+            <table class="tbl mt-12">
+              <thead><tr><th>Section</th><th>必填字段</th><th>示例</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">PLC</td><td>Name, Protocol, IPAddress, Port, Rack, Slot, Enabled</td><td class="mono small">PLC,主PLC,S7,192.168.1.10,102,0,1,1</td></tr>
+                <tr><td class="mono">Device</td><td>Name, Code, Enabled, Description, SortOrder</td><td class="mono small">Device,1#轧机,ROLLING-01,,,,,,,,,,,,,,,,,,,,,1,,,,1</td></tr>
+                <tr><td class="mono">Point</td><td>DeviceName, Name, PlcName, Address, DataType, Unit, 报警字段…</td><td class="mono small">Point,温度,,,主PLC,DB1.DBD0,Real,°C,,,,1,,,,,,,,,1</td></tr>
+                <tr><td class="mono">AlarmThreshold</td><td>DeviceName, PointName, AlarmEnabled, HH/H/L/LL, 延时, 死区</td><td class="mono small">AlarmThreshold,1#轧机,油流,1,,,,8,6,2000,3000,0.5</td></tr>
+              </tbody>
+            </table>
+            <p class="small muted mt-12">最简单的方式：先导出 CSV，用 Excel 打开编辑后再导入，格式完全兼容。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-box"></div>
+  <script src="lib/signalr/signalr.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/config.js"></script>
+</body>
+</html>
